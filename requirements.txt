@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+pydantic
+crewai>=0.5.0
+python-dotenv
