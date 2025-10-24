@@ -4,21 +4,7 @@ A CrewAI-based project for evaluating startup ideas using AI-powered agents. Thi
 
 ---
 
-## 📝 Project Overview
 
-**Project Idea:**  
-An AI-powered mobile app that provides personalized meal plans and grocery lists based on a user’s dietary goals, allergies, and local grocery store availability.
-
-**Target Market / Industry:**  
-Health-conscious individuals in urban areas, primarily aged 20–40, focusing on fitness and nutrition.
-
-**Competitors:**  
-MyFitnessPal, Lifesum, Yazio
-
-**Extra Info:**  
-The app integrates with local grocery APIs to auto-generate shopping lists and recommend affordable ingredients from nearby stores.
-
----
 
 ## 🔧 Features
 
