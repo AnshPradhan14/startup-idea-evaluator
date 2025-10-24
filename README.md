@@ -1,23 +1,42 @@
 # Startup Idea Evaluator
 
-A CrewAI-based project for evaluating startup ideas using AI-powered agents. This tool provides structured insights into market potential, financial projections, and overall viability of a startup idea.
+A CrewAI-based project that evaluates startup ideas across Market, Financial, and Strategic dimensions using Google Gemini and SerpAPI for real-world insights.
+
+This project helps founders, students, and investors quickly understand the feasibility, competitive landscape, and financial potential of any business idea — all from a single interface.
+
+---
+
+## Overview
+
+The Startup Idea Evaluator is an intelligent agent-based system that uses LLMs (Gemini) and live web data (SerpAPI) to provide an objective, multi-layered evaluation of a startup concept.
+
+Each idea is analyzed through three expert AI agents:
+
+1. Market Analyst Agent – Evaluates market trends, customer segments, and real competitors.
+2. Financial Analyst Agent – Builds financial projections and breakeven models.
+3. Startup Advisor Agent – Assesses strategic fit, risks, and overall viability.
+
+It returns a structured JSON report and a Streamlit web interface for interactive exploration.
 
 ---
 
 
+## Features
 
-## 🔧 Features
+| Category                      | Description                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------ |
+| **Market Analysis**        | Identifies trends, customer segments, and competitive landscape using SerpAPI. |
+| **Financial Analysis**     | Generates financial forecasts, pricing strategies, and funding requirements.   |
+| **Advisory Report**     | Provides actionable insights, risks, and strategic recommendations.            |
+| **Real-World Data**        | Integrates **SerpAPI** to fetch up-to-date competitors and market signals.     |
+| **AI-Driven Evaluation**   | Uses **Gemini 2.5 Flash** for advanced reasoning and scoring.                  |
+| **Structured JSON Output** | Produces clean, structured data ready for dashboards or reports.               |
+| **Streamlit Frontend**     | Interactive form for entering and evaluating startup ideas dynamically.        |
 
-- **Market Analysis Agent:** Evaluates market trends, TAM/TOM estimates, competitors, and customer segments.
-- **Financial Analysis Agent:** Generates revenue projections, cost breakdowns, breakeven points, and sensitivity analysis.
-- **Advisor Agent:** Provides risks, strengths, weaknesses, actionable recommendations, and a numeric viability score.
-- **Gemini LLM Integration:** Uses the Gemini AI model for generating insights from structured prompts.
-- **Structured Output:** Generates JSON reports with clear sections for market, financial, and advisory insights.
-- **Optional Streamlit Interface:** Visualize results in a clean web-based UI.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 startup-idea-evaluator/
@@ -35,7 +54,7 @@ startup-idea-evaluator/
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 1. Clone the repository:
 ```bash
@@ -71,7 +90,7 @@ set GEMINI_API_KEY=<your_key>       # Windows
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### Command-Line Interface
 Run the CLI to evaluate a startup idea:
@@ -96,7 +115,7 @@ streamlit run app.py
 
 ---
 
-## 🧠 Model Details
+## Model Details
 
 - **Gemini Model Used:** gemini-2.5-flash
 - **Temperature:** 0.2-0.3 (for deterministic output)
@@ -105,7 +124,7 @@ streamlit run app.py
 
 ---
 
-## 🛠 How It Works
+## How It Works
 
 1. **Input Idea** → Provide startup description, market, and competitors.
 2. **Market Analysis Agent** → Generates market trends, TAM/TOM estimates, and competitor landscape.
@@ -115,7 +134,7 @@ streamlit run app.py
 
 ---
 
-## ⚡ Example Output
+## Example Output
 
 ```json
 {
@@ -137,7 +156,7 @@ streamlit run app.py
 
 ---
 
-## 📈 Notes
+## Notes
 
 - LLM outputs are probabilistic. Run multiple evaluations to get an averaged viability score.
 - Streamlit interface offers a cleaner visualization for non-technical users.
@@ -145,7 +164,7 @@ streamlit run app.py
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 - Python 3.10+
 - Streamlit
@@ -154,7 +173,7 @@ streamlit run app.py
 
 ---
 
-## 📚 References
+## References
 
 - [CrewAI Documentation](https://www.crewai.com/docs)
 - [Gemini AI API](https://developers.google.com/gemini)
@@ -162,6 +181,6 @@ streamlit run app.py
 
 ---
 
-## 📝 License
+## License
 
 This project is open-source and licensed under the MIT License.
