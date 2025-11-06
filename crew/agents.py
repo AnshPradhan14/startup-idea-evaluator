@@ -3,7 +3,7 @@ import json
 import time
 from typing import Dict, Any
 from services.gemini_client import GeminiClient
-from serpapi import GoogleSearch  # <-- fixed import
+from serpapi.google_search import GoogleSearch
 
 # ---------------- Gemini Setup ----------------
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
