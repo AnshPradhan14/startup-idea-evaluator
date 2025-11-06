@@ -1,4 +1,5 @@
 serpapi==0.1.5
+google-search-results
 fastapi
 uvicorn
 requests
