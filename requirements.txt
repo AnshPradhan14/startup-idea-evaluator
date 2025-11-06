@@ -1,4 +1,4 @@
-serpapi==2.0.0
+serpapi
 fastapi
 uvicorn
 requests
