@@ -2,15 +2,49 @@ import streamlit as st
 import json
 from crew.agents import evaluate_startup_idea
 
+# ----------- Streamlit Configuration -----------
 st.set_page_config(page_title="Startup Idea Evaluator", layout="centered")
-st.title("Startup Idea Evaluator with Real-Time Market Data")
+st.title("Startup Idea Evaluator with Real-Time Market Insights")
 
-# --- Inputs (with dynamic resizing) ---
+# ----------- Helper Functions -----------
+def render_dict_as_bullets(data, indent=0):
+    """Recursively render dicts/lists as clean bullet points."""
+    output = ""
+    spacer = "  " * indent
+    if isinstance(data, dict):
+        for k, v in data.items():
+            if isinstance(v, (dict, list)):
+                output += f"{spacer}- **{k.capitalize()}**:\n{render_dict_as_bullets(v, indent+1)}"
+            else:
+                output += f"{spacer}- **{k.capitalize()}**: {v}\n"
+    elif isinstance(data, list):
+        for i, v in enumerate(data):
+            if isinstance(v, (dict, list)):
+                output += f"{spacer}- {render_dict_as_bullets(v, indent+1)}"
+            else:
+                output += f"{spacer}- {v}\n"
+    else:
+        output += f"{spacer}- {data}\n"
+    return output
+
+def render_card(title, content):
+    """Display styled section cards with icons and collapsible content."""
+    with st.expander(title, expanded=False):
+        if isinstance(content, (dict, list)):
+            st.markdown(render_dict_as_bullets(content))
+        else:
+            # Try to parse JSON string
+            try:
+                parsed = json.loads(content)
+                st.markdown(render_dict_as_bullets(parsed))
+            except Exception:
+                st.markdown(content)
+
+# ----------- User Input Section -----------
 idea = st.text_area(
     "Idea Description",
     placeholder="Describe your startup idea here...",
     height=120,
-    key="idea_input"
 )
 
 market = st.text_input(
@@ -27,10 +61,9 @@ extra = st.text_area(
     "Extra Info (optional)",
     placeholder="Any additional context, such as unique selling points or technologies used...",
     height=100,
-    key="extra_info"
 )
 
-
+# ----------- Run Evaluation Button -----------
 if st.button("Evaluate Idea"):
     payload = {
         'idea': idea,
@@ -39,134 +72,66 @@ if st.button("Evaluate Idea"):
         'extra_info': extra
     }
 
-    # call agents (wrapped in try/except to surface errors)
-    with st.spinner("Evaluating... this calls Gemini + SerpAPI..."):
+    with st.spinner("Evaluating your startup idea..."):
         try:
             report = evaluate_startup_idea(payload)
         except Exception as e:
             st.error(f"Error while running evaluation: {e}")
-            # show exception + hint to console
             import traceback
             st.text_area("Traceback", traceback.format_exc(), height=250)
             report = None
 
     if report:
-        # Save raw report for inspection (optional)
+        # Optional: Save raw report
         try:
             with open("output_report.json", "w") as f:
                 json.dump(report, f, indent=2)
         except Exception:
             pass
 
-        # ---- Market Analysis (dropdown) ----
-        with st.expander("🌍 Market Analysis", expanded=False):
-            market_data = report.get("market_analysis")
-            if market_data is None:
-                st.warning("No market_analysis key found in report.")
-                st.write("Raw report (market_analysis missing):")
-                st.json(report)  # debugging fallback
-            else:
-                # If market_data is already JSON/dict -> show prettily; otherwise show raw text
-                if isinstance(market_data, (dict, list)):
-                    st.json(market_data)
-                else:
-                    # sometimes the LLM returns a string with JSON — show text and try parse
-                    st.write(market_data)
-                    try:
-                        parsed = json.loads(market_data)
-                        st.markdown("**Parsed JSON:**")
-                        st.json(parsed)
-                    except Exception:
-                        pass
+        # ----------- Pretty Output Cards -----------
+        st.subheader("Detailed Evaluation Report")
 
-        # ---- Financial Analysis (dropdown) ----
-        with st.expander("💰 Financial Analysis", expanded=False):
-            fin_data = report.get("financial_analysis")
-            if fin_data is None:
-                st.warning("No financial_analysis key found in report.")
-                st.write("Raw report (financial_analysis missing):")
-                st.json(report)
-            else:
-                if isinstance(fin_data, (dict, list)):
-                    st.json(fin_data)
-                else:
-                    st.write(fin_data)
-                    try:
-                        st.json(json.loads(fin_data))
-                    except Exception:
-                        pass
+        market_data = report.get("market_analysis")
+        if market_data:
+            render_card("Market Analysis", market_data)
 
-        # ---- Advisor Report (dropdown) ----
-        with st.expander("🧑‍🏫 Advisor Report", expanded=False):
-            adv_data = report.get("advisor")
-            if adv_data is None:
-                st.warning("No advisor key found in report.")
-                st.write("Raw report (advisor missing):")
-                st.json(report)
-            else:
-                if isinstance(adv_data, (dict, list)):
-                    st.json(adv_data)
-                else:
-                    st.write(adv_data)
-                    try:
-                        st.json(json.loads(adv_data))
-                    except Exception:
-                        pass
+        fin_data = report.get("financial_analysis")
+        if fin_data:
+            render_card("Financial Analysis", fin_data)
 
-        # ---- Viability Score (dropdown) ----
+        adv_data = report.get("advisor")
+        if adv_data:
+            render_card("Advisor Report", adv_data)
+
+        # ----------- Viability Score Section -----------
         with st.expander("📈 Viability Score & Label", expanded=True):
-            # Try several locations where viability might exist for backward-compatibility
-            viability_score = None
-            viability_label = None
+            viability_score = report.get("viability_score")
+            viability_label = report.get("viability_label")
 
-            # common placements
-            if isinstance(report.get("viability_score"), (int, float)):
-                viability_score = report.get("viability_score")
-            elif isinstance(report.get("advisor"), dict) and report["advisor"].get("viability_score") is not None:
-                viability_score = report["advisor"].get("viability_score")
-
-            # sometimes score is string; try to coerce
             if viability_score is None:
-                vs = report.get("viability_score") or (report.get("advisor") and report["advisor"].get("viability_score"))
-                if isinstance(vs, str):
-                    try:
-                        viability_score = float(vs)
-                    except Exception:
-                        viability_score = None
-
-            # label (try a few keys)
-            if report.get("viability_label"):
-                viability_label = report.get("viability_label")
-            elif isinstance(report.get("advisor"), dict):
-                viability_label = report["advisor"].get("viability_label")
-
-            # Default fallback
-            if viability_score is None:
-                st.warning("Viability score not found. Showing default placeholder.")
-                st.write("Viability score missing in report structure.")
+                st.warning("Viability score not found in the report.")
                 st.metric("Viability Score", "N/A")
             else:
-                # Normalize 0-100
                 try:
                     score_val = float(viability_score)
                 except Exception:
                     score_val = 0.0
 
-                # choose color label
-                if score_val >= 75:
+                if score_val >= 7.5:
                     label = "🟢 Excellent"
                     desc = "Strong market potential and business model."
-                elif 50 <= score_val < 75:
+                elif 5.0 <= score_val < 7.5:
                     label = "🟠 Moderate"
                     desc = "Some risk — improvements recommended."
                 else:
                     label = "🔴 Low"
                     desc = "High risk — significant work required."
 
-                st.metric(label="Viability Score", value=f"{score_val}/100")
+                st.metric("Viability Score", f"{score_val}/10")
                 st.markdown(f"### {label}")
                 if viability_label:
-                    st.write(f"Provided label: **{viability_label}**")
+                    st.write(f"Provided Label: **{viability_label}**")
                 st.caption(desc)
 
         st.success("Report displayed above. JSON also saved to `output_report.json`.")
