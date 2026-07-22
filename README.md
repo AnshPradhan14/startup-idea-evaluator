@@ -178,6 +178,7 @@ streamlit run app.py
 - [CrewAI Documentation](https://www.crewai.com/docs)
 - [Gemini AI API](https://developers.google.com/gemini)
 - [Streamlit Documentation](https://docs.streamlit.io)
+- [https://anshpradhan14-startup-idea-evaluator.streamlit.app/](https://anshpradhan14-startup-idea-evaluator.streamlit.app/)
 
 ---
 
